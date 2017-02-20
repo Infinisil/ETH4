@@ -1,0 +1,15 @@
+#!/bin/zsh
+
+DOC_DIR="/Users/infinisil/ETH4"
+
+AVAILABLE_FOLDERS="{ `cd $DOC_DIR && echo *(/)` }"
+
+# If no folder argument supplied, print available folders and exit
+[ -z "$1" ] && echo "No folder given, you can choose from $AVAILABLE_FOLDERS" && exit
+
+# If no folder exists with the name of the first argument, print available
+# folders  and exit
+[ ! -d "$DOC_DIR/$1" ] && echo "Directory \"$1\" does not exist, you can choose from $AVAILABLE_FOLDERS" && exit
+
+# Open todays note file within the supplied folder
+$EDITOR "$DOC_DIR/$1/`date -u +"Notes-%Y-%m-%d"`.md"
