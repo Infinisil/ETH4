@@ -11,5 +11,7 @@ AVAILABLE_FOLDERS="{ `cd $DOC_DIR && echo *(/)` }"
 # folders  and exit
 [ ! -d "$DOC_DIR/$1" ] && echo "Directory \"$1\" does not exist, you can choose from $AVAILABLE_FOLDERS" && exit
 
+DATE=`date -u +"%Y-%m-%d"`
+
 # Open todays note file within the supplied folder
-$EDITOR "$DOC_DIR/$1/`date -u +"Notes-%Y-%m-%d"`.md"
+$EDITOR -S $DOC_DIR/.vimrc "$DOC_DIR/$1/Notes-$DATE.md"
