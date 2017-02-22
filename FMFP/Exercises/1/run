@@ -1,0 +1,17 @@
+#!/usr/bin/expect
+
+spawn -noecho runhaskell main.hs
+
+set fp [open "solution.txt" r]
+while {[gets $fp line] != -1} {
+	if {$line ne ""} {
+		expect "apply rule: "
+		send "$line\n"
+	} else {
+		expect "QED"
+		sleep 2
+	}
+}
+close $fp
+
+interact

@@ -1,0 +1,28 @@
+EncE (Atom "k1")
+EncE (Atom "k2")
+Ax
+PairER (Atom "k1")
+Ax
+PairEL (Atom "k2")
+Ax
+
+EncI
+EncE (Atom "k1")
+Ax
+Ax
+EncE (Atom "k1")
+Ax
+Ax
+
+EncE (Pair (Pair (Atom "a") (Atom "b")) (Atom "c"))
+Ax
+PairI
+PairI
+PairEL (Pair (Atom "b") (Atom "c"))
+Ax
+PairEL (Atom "c")
+PairER (Atom "a")
+Ax
+PairER (Atom "b")
+PairER (Atom "a")
+Ax
