@@ -1,0 +1,10 @@
+<h1 id="operating-systems">Operating Systems</h1>
+<h2 id="roles-of-the-os">Roles of the OS</h2>
+<h3 id="referee">Referee</h3>
+<p>Controls/orchestrates/shares access to resources and hardware by multiplexing. Used for CPU, memory, devices and more. Needs to protect applications from each other through memory, CPU, etc. Must still allow communication. Fairness, no starving and everybody makes progress. Be efficient while doing all of that and guarantee real-time performance.</p>
+<h3 id="illusionist">Illusionist</h3>
+<p>Creates illusion of real resources which seem to be physical but are simpler, larger, better. Used for processor, storage, network, links, etc. virtual memory, virtual machines, files, windows are examples.</p>
+<h3 id="glue">Glue</h3>
+<p>API/Interfaces between components. Virtual machine interface, physical machine interface. High-level abstractions, extends hardware.</p>
+<h2 id="kernel">Kernel</h2>
+<p>Privileged mode is strictly separated on a hardware level from user mode. Kernel is the part that runs in privileged mode. Microkernels outsource a lot of operations to user mode. Kernel typically event-driven server, reacts on syscalls, interrupts and traps.</p>
