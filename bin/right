@@ -1,0 +1,35 @@
+#!/usr/local/bin/stack runghc
+
+import System.IO
+import System.Environment
+
+path :: IO String
+path = fmap extract getArgs where
+  extract [] = filename
+  extract (x:_) = x ++ "/" ++ filename
+  filename = "right.txt"
+
+addScore :: Integer -> IO ()
+addScore int = do
+  file <- path
+  appendFile file (show int ++ "\n")
+
+
+
+main :: IO ()
+main = start 0 where
+  start i = do
+    (continue, result) <- step i
+    if continue then
+      start result
+    else
+      addScore result
+
+step :: Integer -> IO (Bool, Integer)
+step i = do
+  putStr $ "Right " ++ show i
+  line <- getLine
+  case line of
+    [] -> return (True, i+1)
+    "q" -> return $ (False, i)
+    _  -> return $ (True, i-1)
