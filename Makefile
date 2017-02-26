@@ -4,4 +4,16 @@
 
 %.html: %.md
 	mkdir -p html
-	pandoc $^ -o html/$@
+	pandoc $^ -o html/$@ $(HTML_OPTIONS)
+
+html: *.md
+	mkdir -p html
+	pandoc $(sort $^) -o html/all.html $(HTML_OPTIONS)	
+
+pdf: *.md
+	mkdir -p pdf
+	pandoc $(sort $^) -o pdf/all.pdf $(PDF_OPTIONS)
+
+clean:
+	rm -rf pdf
+	rm -rf html
