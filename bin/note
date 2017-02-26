@@ -17,5 +17,7 @@ else
 	DATE=`date -v-$2d -u +"%Y-%m-%d"`
 fi
 
+cd $DOC_DIR/$1
+
 # Open todays note file within the supplied folder
 $EDITOR -S $DOC_DIR/.vimrc "$DOC_DIR/$1/Notes-$DATE.md"
