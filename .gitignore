@@ -1,7 +1,7 @@
 Test/
 **/pdf/Notes*.pdf
 **/html/
-**/pg_stat_tmp/
+DMDB/postgresTest/data/*
 *.swp
 
 
