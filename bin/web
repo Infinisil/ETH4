@@ -1,0 +1,3 @@
+#!/bin/zsh
+FILE=website.txt
+[ -f "$FILE" ] && open $(cat "$FILE")
