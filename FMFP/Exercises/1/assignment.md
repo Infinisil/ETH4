@@ -14,43 +14,20 @@
 ### Proof for $(A\vee B)\to(C\to (A\wedge C)\vee(B\wedge C))$
 
 \begin{prooftree}
-	\AxiomC{}
-	\RightLabel{\scriptsize{axiom}}
-	\UnaryInfC{$\Gamma\vdash A\vee B$}
-											\AxiomC{}
-											\RightLabel{\scriptsize{axiom}}
-											\UnaryInfC{$\Gamma,A\vdash A$}
-																				\AxiomC{}
-																				\RightLabel{\scriptsize{axiom}}
-																				\UnaryInfC{$\Gamma,A\vdash C$}
-																\RightLabel{\scriptsize{$\wedge I$}}
-																\BinaryInfC{$\Gamma,A\vdash A\wedge C$}
 
-																\RightLabel{\scriptsize{$\vee IL$}}
-																\UnaryInfC{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
-
-																													\AxiomC{}
-																													\RightLabel{\scriptsize{axiom}}
-																													\UnaryInfC{$\Gamma,B\vdash B$}
-																																						\AxiomC{}
-																																						\RightLabel{\scriptsize{axiom}}
-																																						\UnaryInfC{$\Gamma,B\vdash C$}
-																																		\RightLabel{\scriptsize{$\wedge I$}}
-																																		\BinaryInfC{$\Gamma,B\vdash B\wedge C$}
-
-																																		\RightLabel{\scriptsize{$\vee IL$}}
-																																		\UnaryInfC{$\Gamma,B\vdash (A\wedge C)\vee(B\wedge C)$}
-
-
-						\RightLabel{\scriptsize{$\vee E$}}
-						\TrinaryInfC{$\Gamma\coloneqq A\vee B,C\vdash (A\wedge C)\vee(B\wedge C)$}
-
-						\RightLabel{\scriptsize{$\to I$}}
-						\UnaryInfC{$A\vee B\vdash C\to (A\wedge C)\vee(B\wedge C)$}
-
-						\RightLabel{\scriptsize{$\to I$}}
-						\UnaryInfC{$(A\vee B)\to(C\to (A\wedge C)\vee(B\wedge C))$}
-												
+	\Ax{$\Gamma\vdash A\vee B$}
+				\Ax{$\Gamma,A\vdash A$}
+							\Ax{$\Gamma,A\vdash C$}
+				\Bi{$\wedge I$}{$\Gamma,A\vdash A\wedge C$}
+				\Un{$\vee IL$}{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
+				\Un{$\vee IL$}{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
+												\Ax{$\Gamma,B\vdash B$}
+															\Ax{$\Gamma,B\vdash C$}
+												\Bi{$\wedge I$}{$\Gamma,B\vdash B\wedge C$}
+												\Un{$\vee IL$}{$\Gamma,B\vdash (A\wedge C)\vee(B\wedge C)$}
+	\Tr{$\vee E$}{$\Gamma\coloneqq A\vee B,C\vdash (A\wedge C)\vee(B\wedge C)$}
+	\Un{$\to I$}{$A\vee B\vdash C\to (A\wedge C)\vee(B\wedge C)$}
+	\Un{$\to I$}{$(A\vee B)\to(C\to (A\wedge C)\vee(B\wedge C))$}
 \end{prooftree}
 
 ### Proof for $(A\to(B\to C))\to((A\wedge B)\to C)$
