@@ -4,20 +4,23 @@ DOC_DIR="/Users/infinisil/ETH4"
 
 AVAILABLE_FOLDERS="{ `cd $DOC_DIR && echo *(/)` }"
 
-# If no folder argument supplied, print available folders and exit
-[ -z "$1" ] && echo "No folder given, you can choose from $AVAILABLE_FOLDERS" && exit
+# If no folder/file argument supplied, print available folders and exit
+[ -z "$1" ] && echo "No folder or file given, you can choose from $AVAILABLE_FOLDERS or enter a filename" && exit
 
 # If no folder exists with the name of the first argument, print available
 # folders  and exit
-[ ! -d "$DOC_DIR/$1" ] && echo "Directory \"$1\" does not exist, you can choose from $AVAILABLE_FOLDERS" && exit
 
-if [ -z "$2" ]; then
-	DATE=`date -u +"%Y-%m-%d"`
+if [ ! -d "$DOC_DIR/$1" ]; then
+	FILE="$1"
 else
-	DATE=`date -v-$2d -u +"%Y-%m-%d"`
+	if [ -z "$2" ]; then
+		DATE=`date -u +"%Y-%m-%d"`
+	else
+		DATE=`date -v-$2d -u +"%Y-%m-%d"`
+	fi
+	cd $DOC_DIR/$1
+	FILE="$DOC_DIR/$1/Notes-$DATE.md"
 fi
 
-cd $DOC_DIR/$1
-
 # Open todays note file within the supplied folder
-$EDITOR -S $DOC_DIR/.vimrc "$DOC_DIR/$1/Notes-$DATE.md"
+$EDITOR -S $DOC_DIR/.vimrc "$FILE"
