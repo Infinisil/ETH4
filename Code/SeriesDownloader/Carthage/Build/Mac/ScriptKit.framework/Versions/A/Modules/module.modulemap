@@ -1,0 +1,10 @@
+framework module ScriptKit {
+  umbrella header "ScriptKit.h"
+
+  export *
+  module * { export * }
+}
+
+module ScriptKit.Swift {
+    header "ScriptKit-Swift.h"
+}

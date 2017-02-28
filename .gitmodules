@@ -1,0 +1,3 @@
+[submodule "Carthage/Checkouts/ScriptKit"]
+	path = Code/SeriesDownloader/Carthage/Checkouts/ScriptKit
+	url = https://github.com/Infinisil/ScriptKit.git
