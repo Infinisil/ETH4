@@ -1,0 +1,4 @@
+sos_max2 :: Int -> Int -> Int -> Int
+sos_max2 a b c d = stuff . sort [a, b, c, d]
+  where
+    stuff [_, _, c, d] = c ^ 2 + d ^ 2
