@@ -19,8 +19,7 @@
 				\Ax{$\Gamma,A\vdash A$}
 							\Ax{$\Gamma,A\vdash C$}
 				\Bi{$\wedge I$}{$\Gamma,A\vdash A\wedge C$}
-				\Un{$\vee IL$}{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
-				\Un{$\vee IL$}{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
+				\Un{$\vee IR$}{$\Gamma,A\vdash (A\wedge C)\vee(B\wedge C)$}
 												\Ax{$\Gamma,B\vdash B$}
 															\Ax{$\Gamma,B\vdash C$}
 												\Bi{$\wedge I$}{$\Gamma,B\vdash B\wedge C$}
