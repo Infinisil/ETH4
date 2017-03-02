@@ -2,6 +2,7 @@
 
 import System.IO
 import System.Environment
+import Data.Time
 
 path :: IO String
 path = fmap extract getArgs where
@@ -9,27 +10,29 @@ path = fmap extract getArgs where
   extract (x:_) = x ++ "/" ++ filename
   filename = "right.txt"
 
-addScore :: Integer -> IO ()
-addScore int = do
-  file <- path
-  appendFile file (show int ++ "\n")
-
+count :: IO Integer
+count = step 0 where
+  step i = do
+    (cont, res) <- enter i
+    if cont then
+      step res
+    else
+      return res
+  enter i = do
+    putStr $ "Right " ++ show i
+    line <- getLine
+    case line of
+      [] -> return (True, i+1)
+      "q" -> return (False, i)
+      _ -> return (True, i-1)
 
 
 main :: IO ()
-main = start 0 where
-  start i = do
-    (continue, result) <- step i
-    if continue then
-      start result
-    else
-      addScore result
-
-step :: Integer -> IO (Bool, Integer)
-step i = do
-  putStr $ "Right " ++ show i
-  line <- getLine
-  case line of
-    [] -> return (True, i+1)
-    "q" -> return $ (False, i)
-    _  -> return $ (True, i-1)
+main = do
+  start <- getZonedTime
+  rights <- count
+  end <- getZonedTime
+  file <- path
+  let showTime = formatTime defaultTimeLocale "%F-%T"
+  let diff = diffUTCTime (zonedTimeToUTC end) (zonedTimeToUTC start)
+  appendFile file $ showTime start ++ " - " ++ showTime end ++ ": " ++ show rights ++ " rights in " ++ show diff ++ "\n"
