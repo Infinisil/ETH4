@@ -12,7 +12,7 @@ html: *.md
 
 pdf: *.md
 	mkdir -p pdf
-	pandoc $(sort $^) -o pdf/all.pdf $(PDF_OPTIONS)
+	pandoc $(sort $^) --toc -o pdf/all.pdf $(PDF_OPTIONS)
 
 clean:
 	rm -rf pdf
