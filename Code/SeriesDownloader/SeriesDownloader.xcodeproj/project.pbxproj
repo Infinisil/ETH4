@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6141C521E69786C00BC4151 /* Source.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6141C511E69786C00BC4151 /* Source.swift */; };
+		B6141C541E6979F500BC4151 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6141C531E6979F500BC4151 /* Config.swift */; };
 		B6542BFF1E649E8F00BC4151 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6542BFE1E649E8F00BC4151 /* main.swift */; };
 		B6542C011E649F7B00BC4151 /* ScriptKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6542C001E649F7B00BC4151 /* ScriptKit.framework */; };
 		B6542C021E649F7B00BC4151 /* ScriptKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6542C001E649F7B00BC4151 /* ScriptKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -27,6 +29,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B6141C511E69786C00BC4151 /* Source.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Source.swift; sourceTree = "<group>"; };
+		B6141C531E6979F500BC4151 /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		B6542BE91E6492E200BC4151 /* SeriesDownloader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SeriesDownloader.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6542BF51E6492E200BC4151 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6542BFE1E649E8F00BC4151 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = main.swift; path = ../main.swift; sourceTree = "<group>"; };
@@ -66,6 +70,8 @@
 			isa = PBXGroup;
 			children = (
 				B6542BFE1E649E8F00BC4151 /* main.swift */,
+				B6141C511E69786C00BC4151 /* Source.swift */,
+				B6141C531E6979F500BC4151 /* Config.swift */,
 				B6542BF51E6492E200BC4151 /* Info.plist */,
 			);
 			path = SeriesDownloader;
@@ -151,7 +157,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6141C521E69786C00BC4151 /* Source.swift in Sources */,
 				B6542BFF1E649E8F00BC4151 /* main.swift in Sources */,
+				B6141C541E6979F500BC4151 /* Config.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -304,6 +312,7 @@
 				B6542BFA1E6492E200BC4151 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
