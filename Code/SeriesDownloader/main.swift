@@ -11,15 +11,17 @@ import ScriptKit
 
 final class MyScript : Script {
 	func setUp(manager: Manager<MyScript>) {
-		
+		NSLog("Starting")
 	}
 	
 	func main(manager: Manager<MyScript>, index: Int32, group: DispatchGroup, context: Void?) {
-		print("hi")
+		NSLog("Task \(index) starts")
+		Thread.sleep(forTimeInterval: 10)
+		NSLog("Task \(index) done")
 	}
 	
 	func tearDown(manager: Manager<MyScript>) {
-		
+		NSLog("Done")
 	}
 }
 
