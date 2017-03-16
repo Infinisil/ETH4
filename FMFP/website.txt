@@ -1,1 +1,2 @@
-http://infsec.ethz.ch/education/ss2017/fmfp.html
+http://www.infsec.ethz.ch/education/ss2017/fmfp.html
+https://www.ethz.ch/content/specialinterest/infk/information-security/information-security-group/en/education/ss2017/fmfp/course_material_secured.html
