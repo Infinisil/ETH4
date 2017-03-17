@@ -23,4 +23,4 @@ else
 fi
 
 # Open todays note file within the supplied folder
-$EDITOR -S $DOC_DIR/.vimrc "$FILE"
+`which vim` -S $DOC_DIR/.vimrc "$FILE"
