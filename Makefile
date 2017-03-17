@@ -1,3 +1,5 @@
+HTML_OPTIONS +=-c ~/ETH4/style.css
+
 %.pdf: %.md
 	mkdir -p pdf
 	pandoc $^ -o pdf/$@ $(PDF_OPTIONS)
