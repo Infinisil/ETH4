@@ -1,5 +1,5 @@
 Test/
-**/pdf/Notes*.pdf
+**/pdf/
 **/html/
 DMDB/postgresTest/data/*
 *.swp
