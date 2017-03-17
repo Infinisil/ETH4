@@ -1,3 +1,6 @@
 [submodule "Carthage/Checkouts/ScriptKit"]
 	path = Code/SeriesDownloader/Carthage/Checkouts/ScriptKit
 	url = https://github.com/Infinisil/ScriptKit.git
+[submodule "SAE/Flight"]
+	path = SAE/Flight
+	url = https://gitlab.com/nemo2/Flight
