@@ -58,8 +58,8 @@ sig University {
 - ~.~ (relational join)
 - ~\~~ (transposition)
 - ~^~ (transitive, reflexive closure)
-- ~<:~ (domain restriction)
-- ~>:~ (range restriction)
+- ~<:~ (domain restriction, remove all tuples with key in left set)
+- ~>:~ (range restriction, remove all tuples with value in right set)
 - ~++~ (override)
 - ~iden~ (identity relation)
 - ~[]~ (box join: ~a[ b ] = b.a~)
@@ -113,6 +113,14 @@ all disj x, y: e | F
 no d: Dir | d in d.^contents // Contents relation is acyclic
 #+END_SRC
 
+*** Multiplicities
+
+- ~lone~ (empty set or sigleton)
+- ~one~ (sigleton set, default for fields)
+- ~set~ (any set, default for signatures)
+- ~some~ (non-empty seju
+
+
 ** Predicates & Functions
 
 #+BEGIN_SRC alloy
@@ -127,9 +135,53 @@ fun leaves[ f: FSObject ]: set FSObject {
 }
 #+END_SRC
 
-** Multiplicities
+*** Analyzer
 
-- ~lone~ (empty set or sigleton)
-- ~one~ (sigleton set, default for fields)
-- ~set~ (any set, default for signatures)
-- ~some~ (non-empty seju
+You can tell the analyzer to search for instances of satisfying functions/predicates with the ~run~ command:
+#+BEGIN_SRC alloy
+ 
+run isLeave
+run isLeave for 5
+run isLeave for 5 Dir, 2 File
+run isLeave for exactly 5 Dir
+run isLeave for 5 but 3 Dir
+run isLeave for 5 but exactly 3 Dir
+#+END_SRC
+
+*** Facts
+
+Facts are constraints that always hold.
+
+#+BEGIN_SRC alloy
+fact { all d: Dir, o: d.contents | o.parent = d }
+fact { no d: Dir | d in d.^contents }
+
+// Can be after signature
+sig Array {
+  length: Int
+  data: { i: Int | 0 <= i && i < length } -> lone E
+} {
+  0 <= length 
+}
+#+END_SRC
+
+*** Checking the model
+
+Assertions aren't enforced, but rather tested by the analyzer. Prefer them over facts.
+#+BEGIN_SRC alloy
+assert nonEmptyRoot { !isLeave[ Root ] }
+assert acyclic { no d: Dir | d in d.^contents }
+
+check nonEmptyRoot for 3
+check acyclic for 5
+#+END_SRC
+
+
+** Libraries
+
+#+BEGIN_SRC alloy
+open util/boolean
+// Enables the Bool signature, check with isTrue/isFalse
+
+open util/ordering
+#+END_SRC

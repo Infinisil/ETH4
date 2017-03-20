@@ -1,0 +1,187 @@
+% Created 2017-03-20 Mon 09:53
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Silvan Mosberger}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Silvan Mosberger},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.1.1 (Org mode 9.0.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Alloy Reference}
+\label{sec:orgb0f67f0}
+
+\subsection{Signatures}
+\label{sec:org964701e}
+
+A signature defines a set of atoms. Inheritance via \texttt{extends} corresponds to a subset relation. \texttt{abstract} same as usual. Signatures can have multiplicies.
+
+\begin{verbatim}
+abstract sig FSObject {}
+
+sig File extends FSObject {}
+sig Dir extends FSObject {}
+
+one sig Root extends Dir {}
+\end{verbatim}
+
+\subsubsection{Fields}
+\label{sec:org5e5be96}
+
+Signatures can contain fields with a multiplicity, which are equivalent to binary relations between the signature and the element type.
+
+\begin{verbatim}
+abstract sig FSObject {
+  parent: lone Dir
+}
+
+sig Dir extends FSObject {
+  contents: set FSObject
+}
+\end{verbatim}
+
+\begin{verbatim}
+sig University {
+  students: set Student,
+  enrollment: students set -> one Program // Can depend on other field
+}
+\end{verbatim}
+\subsection{Operations}
+\label{sec:org196a04b}
+
+\subsubsection{On sets}
+\label{sec:org722ea51}
+
+\begin{itemize}
+\item \texttt{+} (union)
+\item \texttt{\&} (intersection)
+\item \texttt{-} (difference)
+\item \texttt{in} (subset)
+\item \texttt{=} (equality)
+\item \texttt{\#} (cardinality)
+\item \texttt{none} (empty set)
+\item \texttt{univ} (universal set).
+\end{itemize}
+
+\begin{verbatim}
+#{ f: FSObject | f in File + Dir} >= #Dir
+#( File + Dir ) >= #Dir
+\end{verbatim}
+
+\subsubsection{On relations}
+\label{sec:org7dde16d}
+
+\begin{itemize}
+\item \texttt{->} (cross product)
+\item \texttt{.} (relational join)
+\item \texttt{\textbackslash{}\textasciitilde{}} (transposition)
+\item \texttt{\textasciicircum{}} (transitive, reflexive closure)
+\item \texttt{<:} (domain restriction)
+\item \texttt{>:} (range restriction)
+\item \texttt{++} (override)
+\item \texttt{iden} (identity relation)
+\item \texttt{[]} (box join: \texttt{a[ b ] = b.a})
+\end{itemize}
+
+\begin{verbatim}
+FSObject in Root.*contents
+
+// r: Root, d1: Dir, d2: Dir, f: File
+// contents = {(r, d1), (d1, d2), (d2, f)}
+*contents = {(r,d1), (d1,d2), (d2,f), (d1,f), (r,d2), (r,f), (r,r), (d1,d1), (d2,d2), (f,f)}
+Root.*contents = {(d1), (d2), (f), (r)} // Take elements on the right which have `Root` on the left
+\end{verbatim}
+
+\subsubsection{Constraints}
+\label{sec:orgc645aaa}
+
+\begin{itemize}
+\item \texttt{!} / \texttt{not} (negation)
+\item \texttt{\&\&} / \texttt{and} (conjunction)
+\item \texttt{||} / \texttt{or} (disjunction)
+\item \texttt{=>} / \texttt{implies} (implication)
+\item \texttt{else} (alternative)
+\item \texttt{<=>} / \texttt{iff} (equivalence)
+\end{itemize}
+
+\begin{verbatim}
+F => G else H
+F implies G else H
+(F && G) || ((!F) && H)
+(F and G) or ((not F) and H)
+\end{verbatim}
+
+\begin{itemize}
+\item \texttt{some e} (e has at least one tuple)
+\item \texttt{no e} (e has no tuples)
+\item \texttt{lone e} (e has at most one tuple)
+\item \texttt{one e} (e has exactly one tuple)
+\end{itemize}
+
+\begin{verbatim}
+no Root.parent
+\end{verbatim}
+
+\subsubsection{Quantification}
+\label{sec:org27a3c41}
+
+\begin{itemize}
+\item \texttt{all x: e | F} (F holds for every x in e)
+\item \texttt{some x: e | F} (F holds for at least one x in e)
+\item \texttt{no x: e | F} (F holds for no x in e)
+\item \texttt{lone x: e | F} (F holds for at most one x in e)
+\item \texttt{one x: e | F} (F holds for exactly one x in e)
+\end{itemize}
+
+\begin{verbatim}
+all x: e1, y: e2 | F
+all disj x, y: e | F
+
+no d: Dir | d in d.^contents // Contents relation is acyclic
+\end{verbatim}
+
+\subsection{Predicates \& Functions}
+\label{sec:orgb4cb44e}
+
+\begin{verbatim}
+// "returns" a boolean
+pred isLeave[ f: FSObject ] {
+  f in File || no f.contents
+}
+
+// "returns" anything else
+fun leaves[ f: FSObject ]: set FSObject {
+  { x: f.*contents | isLeave[ x ] }
+}
+\end{verbatim}
+
+\subsection{Multiplicities}
+\label{sec:orgb96a83c}
+
+\begin{itemize}
+\item \texttt{lone} (empty set or sigleton)
+\item \texttt{one} (sigleton set, default for fields)
+\item \texttt{set} (any set, default for signatures)
+\item \texttt{some} (non-empty seju
+\end{itemize}
+\end{document}
