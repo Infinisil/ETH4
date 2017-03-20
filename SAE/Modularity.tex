@@ -1,0 +1,50 @@
+% Created 2017-03-20 Mon 11:53
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Silvan Mosberger}
+\date{\textit{<2017-03-20 Mon>}}
+\title{Software Architecture and Engineering}
+\hypersetup{
+ pdfauthor={Silvan Mosberger},
+ pdftitle={Software Architecture and Engineering},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.1.1 (Org mode 9.0.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+\section{Modularity}
+\label{sec:org3fa697e}
+
+\subsection{Coupling}
+\label{sec:org4df49df}
+
+\subsubsection{Data Coupling}
+\label{sec:org897fd9a}
+
+Representation Exposure: Try not to expose internal representation, because this couples thes code with the client and is difficult to change during maintenance.
+
+\begin{enumerate}
+\item Approach 1: Restricting Access to Data
+\label{sec:orgc3efd45}
+
+Force narrow interface, hide implementation, no references to subobjects (leaking), no storing of arguments as subobjects (capturing).
+\end{enumerate}
+\end{document}

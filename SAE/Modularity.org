@@ -1,0 +1,16 @@
+#+TITLE: Software Architecture and Engineering
+#+AUTHOR: Silvan Mosberger
+
+* Modularity
+
+** Coupling
+
+*** Data Coupling
+
+Representation Exposure: Try not to expose internal representation, because this couples thes code with the client and is difficult to change during maintenance.
+
+**** Approach 1: Restricting Access to Data
+
+Force narrow interface, hide implementation, no references to subobjects (leaking), no storing of arguments as subobjects (capturing).
+
+Facade pattern: A single, simplified interface without hiding detais completely.
