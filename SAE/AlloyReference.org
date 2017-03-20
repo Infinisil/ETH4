@@ -1,0 +1,135 @@
+* Alloy Reference
+
+** Signatures 
+
+A signature defines a set of atoms. Inheritance via ~extends~ corresponds to a subset relation. ~abstract~ same as usual. Signatures can have multiplicies.
+
+#+BEGIN_SRC alloy
+abstract sig FSObject {}
+
+sig File extends FSObject {}
+sig Dir extends FSObject {}
+
+one sig Root extends Dir {}
+#+END_SRC
+
+*** Fields
+
+Signatures can contain fields with a multiplicity, which are equivalent to binary relations between the signature and the element type.
+
+#+BEGIN_SRC alloy
+abstract sig FSObject {
+  parent: lone Dir
+}
+
+sig Dir extends FSObject {
+  contents: set FSObject
+}
+#+END_SRC
+
+#+BEGIN_SRC alloy
+sig University {
+  students: set Student,
+  enrollment: students set -> one Program // Can depend on other field
+}
+
+#+END_SRC
+** Operations
+
+*** On sets
+
+- ~+~ (union)
+- ~&~ (intersection)
+- ~-~ (difference)
+- ~in~ (subset)
+- ~=~ (equality)
+- ~#~ (cardinality)
+- ~none~ (empty set)
+- ~univ~ (universal set).
+
+#+BEGIN_SRC alloy
+#{ f: FSObject | f in File + Dir} >= #Dir
+#( File + Dir ) >= #Dir
+#+END_SRC
+
+*** On relations
+
+- ~->~ (cross product)
+- ~.~ (relational join)
+- ~\~~ (transposition)
+- ~^~ (transitive, reflexive closure)
+- ~<:~ (domain restriction)
+- ~>:~ (range restriction)
+- ~++~ (override)
+- ~iden~ (identity relation)
+- ~[]~ (box join: ~a[ b ] = b.a~)
+
+#+BEGIN_SRC alloy
+FSObject in Root.*contents
+
+// r: Root, d1: Dir, d2: Dir, f: File
+// contents = {(r, d1), (d1, d2), (d2, f)}
+*contents = {(r,d1), (d1,d2), (d2,f), (d1,f), (r,d2), (r,f), (r,r), (d1,d1), (d2,d2), (f,f)}
+Root.*contents = {(d1), (d2), (f), (r)} // Take elements on the right which have `Root` on the left
+#+END_SRC
+
+*** Constraints
+
+- ~!~ / ~not~ (negation)
+- ~&&~ / ~and~ (conjunction)
+- ~||~ / ~or~ (disjunction)
+- ~=>~ / ~implies~ (implication)
+- ~else~ (alternative)
+- ~<=>~ / ~iff~ (equivalence)
+
+#+BEGIN_SRC alloy
+F => G else H
+F implies G else H
+(F && G) || ((!F) && H)
+(F and G) or ((not F) and H)
+#+END_SRC
+
+- ~some e~ (e has at least one tuple)
+- ~no e~ (e has no tuples)
+- ~lone e~ (e has at most one tuple)
+- ~one e~ (e has exactly one tuple)
+
+#+BEGIN_SRC alloy
+no Root.parent
+#+END_SRC
+
+*** Quantification
+
+- ~all x: e | F~ (F holds for every x in e)
+- ~some x: e | F~ (F holds for at least one x in e)
+- ~no x: e | F~ (F holds for no x in e)
+- ~lone x: e | F~ (F holds for at most one x in e)
+- ~one x: e | F~ (F holds for exactly one x in e)
+
+#+BEGIN_SRC alloy
+all x: e1, y: e2 | F
+all disj x, y: e | F
+
+no d: Dir | d in d.^contents // Contents relation is acyclic
+#+END_SRC
+
+** Predicates & Functions
+
+#+BEGIN_SRC alloy
+// "returns" a boolean
+pred isLeave[ f: FSObject ] {
+  f in File || no f.contents
+}
+
+// "returns" anything else
+fun leaves[ f: FSObject ]: set FSObject {
+  { x: f.*contents | isLeave[ x ] }
+}
+#+END_SRC
+
+** Multiplicities
+
+- ~lone~ (empty set or sigleton)
+- ~one~ (sigleton set, default for fields)
+- ~set~ (any set, default for signatures)
+- ~some~ (non-empty seju
