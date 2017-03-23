@@ -1,0 +1,27 @@
+* Operating Systems and Networks
+
+** OS Introduction
+** Processes
+** Scheduling
+** Scheduling and Synchronization
+** Memory Management
+** Demand Paging
+** Filesystem Abstractions
+** Filesystem Implementation
+** I/O Subsystems
+
+DPCs aka 2^nd -level interrupt handlers
+
+**** Matching drivers to devices
+
+Devices have a unique id. 
+
+**** Naming devices in the Unix kernel
+
+Kernel creates identifiers for
+
+- Block devices: Deals with large blocks of data
+- Character devices
+- (Network devices)
+
+Major device number (class of device), minor device number (specific device with class).
