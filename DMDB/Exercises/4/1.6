@@ -1,0 +1,7 @@
+﻿select e.first_name, e.last_name, t.title, d.dept_name
+from employees e
+join dept_manager dm on dm.emp_no = e.emp_no
+join departments d on d.dept_no = dm.dept_no
+join titles t on t.emp_no = e.emp_no
+where dm.to_date > now()
+and t.to_date > now()

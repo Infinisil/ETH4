@@ -1,0 +1,7 @@
+﻿select d.dept_no, d.dept_name, avg(s.salary)
+from employees e
+join dept_emp de on de.emp_no = e.emp_no
+join departments d on d.dept_no = de.dept_no
+join salaries s on s.emp_no = e.emp_no
+where date_part('year', s.to_date) = 1988
+group by d.dept_no, d.dept_name
