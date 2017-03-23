@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env zsh
 
 DOC_DIR="/Users/infinisil/ETH4"
 
@@ -23,4 +23,4 @@ else
 fi
 
 # Open todays note file within the supplied folder
-`which vim` -S $DOC_DIR/.vimrc "$FILE"
+nvim -S $DOC_DIR/.vimrc "$FILE"
