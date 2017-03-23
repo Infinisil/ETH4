@@ -1,4 +1,4 @@
-% Created 2017-03-20 Mon 11:53
+% Created 2017-03-22 Wed 11:43
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -15,7 +15,7 @@
 \usepackage{capt-of}
 \usepackage{hyperref}
 \author{Silvan Mosberger}
-\date{\textit{<2017-03-20 Mon>}}
+\date{\today}
 \title{Software Architecture and Engineering}
 \hypersetup{
  pdfauthor={Silvan Mosberger},
@@ -31,20 +31,99 @@
 
 
 \section{Modularity}
-\label{sec:org3fa697e}
+\label{sec:orgaf68fef}
 
 \subsection{Coupling}
-\label{sec:org4df49df}
+\label{sec:orgadda459}
 
 \subsubsection{Data Coupling}
-\label{sec:org897fd9a}
+\label{sec:org4cc4e34}
 
 Representation Exposure: Try not to expose internal representation, because this couples thes code with the client and is difficult to change during maintenance.
 
 \begin{enumerate}
 \item Approach 1: Restricting Access to Data
-\label{sec:orgc3efd45}
+\label{sec:org23c3da8}
 
 Force narrow interface, hide implementation, no references to subobjects (leaking), no storing of arguments as subobjects (capturing).
+
+Facade pattern: A single, simplified interface without hiding detais completely.
+
+\item Approach 2: Making SHared Data Immutable
+\label{sec:orgc9ca9e4}
+
+Most problems don't occur like this, but copies can lead to run-time/memory overhead and sometimes mutation is still needed.
+
+Flyweight pattern: Basically memoization, a factory for objects checks if one exists for a key and returns it or creates a new one otherwise. Java uses this for strings, multiple "Hello" strings are shared between all clients that requested it.
+
+\item Approach 3: Avoid Sharing Data
+\label{sec:org475b041}
+
+Abstract the relevant parts to not depend on each other and avoid sharing data.
+
+\item Architectual Style
+\label{sec:org318a9c2}
+
+\begin{enumerate}
+\item Pipe-and-Filter
+\label{sec:org2654e9e}
+
+Basically reactive programming, just work with filters, splits, maps, pipes, etc. Very functional, much wow. Also Unix pipes.
+
+Fusion: Fusion reduces communication cost at the expense of parallelism
+
+Fission: Fission is profitable if the benefits of parallelization outweigh the overhead introduced by fission
+
+Advantages: Reusability, ease of maintenance, potential for paralellism
+
+Disadvantages: Sharing is expensive/limiting, difficult to design incremental filters, "not appropriate for user interaction" (lol no), "error handling is hard" (only when you don't do it right), "smallest denominator on data transmission" (ever heard of types?).
 \end{enumerate}
+\end{enumerate}
+
+\subsubsection{Procedural Coupling}
+\label{sec:org186af0e}
+
+Modules are coupled by called methods of each other. Changing either one of them implies changing another one.
+
+\begin{enumerate}
+\item Approach 1: Moving Code
+\label{sec:org97b99ce}
+
+Fix the dependency by moving code to the module that it should be in.
+
+\item Approach 2: Event-Based Style
+\label{sec:org8c01dd6}
+
+Components generate events, others can listen to specific events. Generators don't know who's affected. E.g. IDE's, user interfaces, web sites. Observers and Observables.
+
+Advantages: Good reuse, add/remove/replace components with minimum effect on other components
+
+Disadvantages: Loss of control (what happens on this event, etc.), ensuring correctness is difficult because it depends on context
+
+\begin{enumerate}
+\item Model-View-Controller :/
+\label{sec:org97a602e}
+\end{enumerate}
+
+\item Approach 3: Restricting Calls
+\label{sec:orgd9e653c}
+
+Enforce restricted access to calls of different modules. Example: Layered architecture (can only call methods of next layer).
+
+\begin{enumerate}
+\item Three-Tier Architecture
+\label{sec:orga3d2e42}
+
+Presentation Tier (UI), Logic Tier (functionality), Data Tier (persistent storage). Can exchange any tier.
+
+Advantages: Increasing levels of abstraction on higher layers, simple maintenance (low coupling), reusability of layer implementation
+
+Disadvantages: Performance since there are many levels of indirection.
+\end{enumerate}
+\end{enumerate}
+
+\subsubsection{Class Coupling}
+\label{sec:org02123db}
+
+Inheritance couples classes together and changes to the superclass can cause problems in the subclass.
 \end{document}
