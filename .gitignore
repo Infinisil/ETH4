@@ -4,4 +4,4 @@ Test/
 DMDB/postgresTest/data/*
 *.swp
 
-
+*.tex
