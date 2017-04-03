@@ -4,11 +4,8 @@ import System.IO
 import System.Environment
 import Data.Time
 
-path :: IO String
-path = fmap extract getArgs where
-  extract [] = filename
-  extract (x:_) = x ++ "/" ++ filename
-  filename = "right.txt"
+path :: String
+path = "right.txt"
 
 count :: IO Integer
 count = step 0 where
@@ -32,7 +29,6 @@ main = do
   start <- getZonedTime
   rights <- count
   end <- getZonedTime
-  file <- path
   let showTime = formatTime defaultTimeLocale "%F-%T"
   let diff = diffUTCTime (zonedTimeToUTC end) (zonedTimeToUTC start)
-  appendFile file $ showTime start ++ " - " ++ showTime end ++ ": " ++ show rights ++ " rights in " ++ show diff ++ "\n"
+  appendFile path $ showTime start ++ " - " ++ showTime end ++ ": " ++ show rights ++ " rights in " ++ show diff ++ "\n"

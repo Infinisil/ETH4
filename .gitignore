@@ -2,6 +2,7 @@ Test/
 **/pdf/
 **/html/
 DMDB/postgresTest/data/*
-*.swp
+**.swp
 
-*.tex
+**.aux
+**.log
