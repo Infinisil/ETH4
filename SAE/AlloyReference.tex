@@ -1,0 +1,242 @@
+% Created 2017-03-22 Wed 13:12
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\author{Silvan Mosberger}
+\date{\today}
+\title{}
+\hypersetup{
+ pdfauthor={Silvan Mosberger},
+ pdftitle={},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.1.1 (Org mode 9.0.5)}, 
+ pdflang={English}}
+\begin{document}
+
+\tableofcontents
+
+\section{Alloy Reference}
+\label{sec:orgb06ff24}
+
+\subsection{Signatures}
+\label{sec:orgb025cb3}
+
+A signature defines a set of atoms. Inheritance via \texttt{extends} corresponds to a subset relation. \texttt{abstract} same as usual. Signatures can have multiplicies.
+
+\begin{verbatim}
+abstract sig FSObject {}
+
+sig File extends FSObject {}
+sig Dir extends FSObject {}
+
+one sig Root extends Dir {}
+\end{verbatim}
+
+\subsubsection{Fields}
+\label{sec:org5626073}
+
+Signatures can contain fields with a multiplicity, which are equivalent to binary relations between the signature and the element type.
+
+\begin{verbatim}
+abstract sig FSObject {
+  parent: lone Dir
+}
+
+sig Dir extends FSObject {
+  contents: set FSObject
+}
+\end{verbatim}
+
+\begin{verbatim}
+sig University {
+  students: set Student,
+  enrollment: students set -> one Program // Can depend on other field
+}
+\end{verbatim}
+\subsection{Operations}
+\label{sec:org234f1cc}
+
+\subsubsection{On sets}
+\label{sec:orgd7047cd}
+
+\begin{itemize}
+\item \texttt{+} (union)
+\item \texttt{\&} (intersection)
+\item \texttt{-} (difference)
+\item \texttt{in} (subset)
+\item \texttt{=} (equality)
+\item \texttt{\#} (cardinality)
+\item \texttt{none} (empty set)
+\item \texttt{univ} (universal set).
+\end{itemize}
+
+\begin{verbatim}
+#{ f: FSObject | f in File + Dir} >= #Dir
+#( File + Dir ) >= #Dir
+\end{verbatim}
+
+\subsubsection{On relations}
+\label{sec:orge76f433}
+
+\begin{itemize}
+\item \texttt{->} (cross product)
+\item \texttt{.} (relational join)
+\item \texttt{\textbackslash{}\textasciitilde{}} (transposition)
+\item \texttt{\textasciicircum{}} (transitive, reflexive closure)
+\item \texttt{<:} (domain restriction, remove all tuples with key in left set)
+\item \texttt{>:} (range restriction, remove all tuples with value in right set)
+\item \texttt{++} (override)
+\item \texttt{iden} (identity relation)
+\item \texttt{[]} (box join: \texttt{a[ b ] = b.a})
+\end{itemize}
+
+\begin{verbatim}
+FSObject in Root.*contents
+
+// r: Root, d1: Dir, d2: Dir, f: File
+// contents = {(r, d1), (d1, d2), (d2, f)}
+*contents = {(r,d1), (d1,d2), (d2,f), (d1,f), (r,d2), (r,f), (r,r), (d1,d1), (d2,d2), (f,f)}
+Root.*contents = {(d1), (d2), (f), (r)} // Take elements on the right which have `Root` on the left
+\end{verbatim}
+
+\subsubsection{Constraints}
+\label{sec:org4d404b9}
+
+\begin{itemize}
+\item \texttt{!} / \texttt{not} (negation)
+\item \texttt{\&\&} / \texttt{and} (conjunction)
+\item \texttt{||} / \texttt{or} (disjunction)
+\item \texttt{=>} / \texttt{implies} (implication)
+\item \texttt{else} (alternative)
+\item \texttt{<=>} / \texttt{iff} (equivalence)
+\end{itemize}
+
+\begin{verbatim}
+F => G else H
+F implies G else H
+(F && G) || ((!F) && H)
+(F and G) or ((not F) and H)
+\end{verbatim}
+
+\begin{itemize}
+\item \texttt{some e} (e has at least one tuple)
+\item \texttt{no e} (e has no tuples)
+\item \texttt{lone e} (e has at most one tuple)
+\item \texttt{one e} (e has exactly one tuple)
+\end{itemize}
+
+\begin{verbatim}
+no Root.parent
+\end{verbatim}
+
+\subsubsection{Quantification}
+\label{sec:org49a858f}
+
+\begin{itemize}
+\item \texttt{all x: e | F} (F holds for every x in e)
+\item \texttt{some x: e | F} (F holds for at least one x in e)
+\item \texttt{no x: e | F} (F holds for no x in e)
+\item \texttt{lone x: e | F} (F holds for at most one x in e)
+\item \texttt{one x: e | F} (F holds for exactly one x in e)
+\end{itemize}
+
+\begin{verbatim}
+all x: e1, y: e2 | F
+all disj x, y: e | F
+
+no d: Dir | d in d.^contents // Contents relation is acyclic
+\end{verbatim}
+
+\subsubsection{Multiplicities}
+\label{sec:orge41ed42}
+
+\begin{itemize}
+\item \texttt{lone} (empty set or sigleton)
+\item \texttt{one} (sigleton set, default for fields)
+\item \texttt{set} (any set, default for signatures)
+\item \texttt{some} (non-empty seju
+\end{itemize}
+
+
+\subsection{Predicates \& Functions}
+\label{sec:orgca06e51}
+
+\begin{verbatim}
+// "returns" a boolean
+pred isLeave[ f: FSObject ] {
+  f in File || no f.contents
+}
+
+// "returns" anything else
+fun leaves[ f: FSObject ]: set FSObject {
+  { x: f.*contents | isLeave[ x ] }
+}
+\end{verbatim}
+
+\subsubsection{Analyzer}
+\label{sec:org66e012b}
+
+You can tell the analyzer to search for instances of satisfying functions/predicates with the \texttt{run} command:
+\begin{verbatim}
+run isLeave
+run isLeave for 5
+run isLeave for 5 Dir, 2 File
+run isLeave for exactly 5 Dir
+run isLeave for 5 but 3 Dir
+run isLeave for 5 but exactly 3 Dir
+\end{verbatim}
+
+\subsubsection{Facts}
+\label{sec:orgb9a30de}
+
+Facts are constraints that always hold.
+
+\begin{verbatim}
+fact { all d: Dir, o: d.contents | o.parent = d }
+fact { no d: Dir | d in d.^contents }
+
+// Can be after signature
+sig Array {
+  length: Int
+  data: { i: Int | 0 <= i && i < length } -> lone E
+} {
+  0 <= length 
+}
+\end{verbatim}
+
+\subsubsection{Checking the model}
+\label{sec:org11051ce}
+
+Assertions aren't enforced, but rather tested by the analyzer. Prefer them over facts.
+\begin{verbatim}
+assert nonEmptyRoot { !isLeave[ Root ] }
+assert acyclic { no d: Dir | d in d.^contents }
+
+check nonEmptyRoot for 3
+check acyclic for 5
+\end{verbatim}
+
+
+\subsection{Libraries}
+\label{sec:orgf2001cc}
+
+\begin{verbatim}
+open util/boolean
+// Enables the Bool signature, check with isTrue/isFalse
+
+open util/ordering
+\end{verbatim}
+\end{document}
