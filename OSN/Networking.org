@@ -1,0 +1,68 @@
+* Introduction
+** Types of Links
+
+Full-duplex: Bidirectional
+
+Half-duplex: Bidirectional
+
+Simplex: 
+
+Wireless links: Messages are broadcasted to all nodes in range.
+
+** Network names by scale
+
+Vicinity: PAN
+Building: LAN (Local)
+City: MAN (Metropolitan)
+Country: WAN (Wide)
+Planet: The internet
+
+** Interfaces
+
+Needs well defined interfaces between apps and network, and network components. *Sockets* are widely used for app/network. App doesn't need to know what happens in the network.
+
+** Traceroute
+
+~traceroute~ can be used to look inside. Sends packets with gradually increasing TTL (Time-to-live), so that on each hop getting further than the last one you get a message back.
+
+** Protocols and Layers
+
+These are the main structuring layers to divide functionality of the network up. Protocol stack. Protocols: TCP, IP, 802.11, Ethernet, HTTP, SSL, DNS, etc.
+
+Encapsulation: Lower layer wraps higher layer content, adding its own information to make a new message for delivery, like a letter in a letter or an onion (lower layer outermost). Sender wraps up the message, receiver unpacks it. Headers, footers, encryption, etc. can be part of any wrapping.
+
+Protocol stacks form a tree, to send to the correct protocol, demultiplexing keys are used.
+
+Advantages: Layers hide information and permit reuse. Middlepoint can only unpack to IP level to continue routing, hides connection information.
+
+Disadvantages: Adds overhead, hides information.
+
+"7 Layer" Reference Model: Physical, Data link, Network, Transport, Session, Presentation, Application. Influental but not really used.
+
+IP is the most important protocol and used for everything else.
+
+Layers aren't strict, multiple ones can be in one protocol.
+
+** Layer-based Names
+
+For data:
+
+| Layer       | Unit of Data |
+| Application | Message      |
+| Transport   | Segment      |
+| Network     | Packet       |
+| Link        | Frame        |
+| Physical    | Bit          |
+
+For devices:
+
+Repeater/hub (physical)
+
+Switch(bridge) (Ethernet)
+
+router (IP layer)
+
+Proxy/middlebox/gateway (App+transport+network+link)
+
+** Physical
+
