@@ -1,0 +1,109 @@
+* Static Analysis
+
+** Introduction
+
+It is not possible to have a program that computes an arbitrary property of an arbitrary program (e.g. halting problem), but it's sometimes possible in a restricted space. The goal is to build an analyzer that answers "Yes" for as many programs as possible that satisfy the property. Over-approximation of program behaviours should be as close to the actual behaviour as possible. The analyzer has to constantly trade *precision* vs *complexity* (e.g. ~x in [0, 5]~ (O(1)), ~y>=x+5z-9~ (O(n^e))). When the property is shown to hold on the overapproximation, is is also true for all actual behaviours. Underapproximation: extend as far as possible, no false positives.
+
+Static analysis can prove absence of null pointer dereferences, assertions at program points, termination, absence of data races, find bugs/bad patterns. It can run the program without input, just abstractly. No need for manual loop invariants, is inferred.
+
+*** Example
+
+ #+BEGIN_SRC idris
+   -- McCarthy 91 function
+   mc : Int -> Int
+   mc n = if n > 100 then
+             n - 10 else -- n > 100
+             mc $ mc $ n + 11 -- n <= 100
+ #+END_SRC
+
+** Abstract Interpretation
+
+A general theory of how to do approximation systematically. Type systems, data-flow analysis, model checking can be seen as abstract interpretation.
+
+*** Step-by-step
+
+1. Select/define abstract domain, based on the type of *properties* you want to prove
+2. Define abstract semantics *for the language* w.r.t the domain, prove *sound* w.r.t. concrete semantics. Involves defining abstract transformers (effect of statement/expression on the abstract domain). Defined once /per language/. A correct abstract transformer should only produce a superset of what the actual transformation produces.
+3. Iteracet abstract transformers over abstract domain until *fixed point* is reached. This is then an over-approximation of the program.
+
+*** Example
+
+#+BEGIN_SRC pascal
+foo (int i) {
+
+1: int x := 5;
+2: int y := 7;
+
+3: if (i >= 0) {
+4:   y := y + 1;
+5:   i := i - 1;
+6:   goto 3;
+   }
+
+7: assert 0 <= x + y
+}
+#+END_SRC
+
+1. Picking domain: Sign abstraction (Only ~+~ and ~-~ values, ~0~ doesn't exist). ~+~ represents all positive numbers, ~-~ all negative numbers including 0.
+#+BEGIN_SRC dot :exports results :file signAbstraction.png
+graph {
+T -- "+" -- 0 -- "_|_"
+T -- "-" -- 0
+}
+#+END_SRC
+
+#+RESULTS:
+[[file:signAbstraction.png]]
+
+Example Abstract program state: 
+| pc | x | y      | i |
+|  2 | + | bottom | T |
+
+2. Defining abstract transformers: What happens to program state on certain expressions.
+
+| pc | x | y | i |
+|  4 | T | + | T |
+
+#+BEGIN_SRC 
+y := y + 1
+#+END_SRC
+
+| pc | x | y | i |
+|  5 | T | + | T |
+
+------------
+
+| pc | x | y | i |
+|  4 | T | - | T |
+
+#+BEGIN_SRC 
+y := y + 1
+#+END_SRC
+
+| pc | x | y | i |
+|  5 | T | 0 | T |
+
+Not correct, because transformer isn't a superset of the transformations (doesn't represent ~y=-3~ -> ~y=-2~)
+
+| pc | x | y | i |
+|  5 | T | T | T |
+
+Correct.
+
+------------
+
+| pc | x | y | i |
+|  4 | T | 0 | T |
+
+#+BEGIN_SRC 
+y := y + 1
+#+END_SRC
+
+| pc | x | y | i |
+|  5 | T | T | T |
+
+Correct, but ~y=+~ would be more constrained and still correct.
+
+*** Abstract Transformers
+
+Easy to be *sound* and *imprecise*, desirable to be sound and /precise/. For efficiency, sacrifice precision sometimes.
