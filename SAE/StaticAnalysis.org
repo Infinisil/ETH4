@@ -1,16 +1,16 @@
 * Static Analysis
-
+  
 ** Introduction
 
-It is not possible to have a program that computes an arbitrary property of an arbitrary program (e.g. halting problem), but it's sometimes possible in a restricted space. The goal is to build an analyzer that answers "Yes" for as many programs as possible that satisfy the property. Over-approximation of program behaviours should be as close to the actual behaviour as possible. The analyzer has to constantly trade *precision* vs *complexity* (e.g. ~x in [0, 5]~ (O(1)), ~y>=x+5z-9~ (O(n^e))). When the property is shown to hold on the overapproximation, is is also true for all actual behaviours. Underapproximation: extend as far as possible, no false positives.
+It is not possible to have a program that computes an arbitrary property of an arbitrary program (e.g. halting problem), but it's sometimes possible in a restricted space. The goal is to build an analyzer that answers "Yes" for as many programs as possible that satisfy the property. Over-approximation of program behaviours should be as close to the actual behaviour as possible. The analyzer has to constantly trade *precision* vs *complexity* (e.g. ~x in [0, 5]~ ($\mathcal{O}(1)$), ~y>=x+5z-9~ ($\mathcal{O}(n^e)$)). When the property is shown to hold on the overapproximation, is is also true for all actual behaviours. Underapproximation: extend as far as possible, no false positives.
 
 Static analysis can prove absence of null pointer dereferences, assertions at program points, termination, absence of data races, find bugs/bad patterns. It can run the program without input, just abstractly. No need for manual loop invariants, is inferred.
 
 *** Example
 
- #+BEGIN_SRC idris
+ #+BEGIN_SRC haskell
    -- McCarthy 91 function
-   mc : Int -> Int
+   mc :: Int -> Int
    mc n = if n > 100 then
              n - 10 else -- n > 100
              mc $ mc $ n + 11 -- n <= 100
@@ -22,88 +22,150 @@ A general theory of how to do approximation systematically. Type systems, data-f
 
 *** Step-by-step
 
-1. Select/define abstract domain, based on the type of *properties* you want to prove
+1. Select/define abstract domain, based on the type of *properties* you want to prove. See the example below. Domains can be non-relational (Intervals, Sign) with low complexity or weakly relational (Pentagon, Octagon $\pm x \pm y\leq c$, Polyhedra, etc.) with higher complexity, numerical domains (Pointers/refs, heap/allocation).
 2. Define abstract semantics *for the language* w.r.t the domain, prove *sound* w.r.t. concrete semantics. Involves defining abstract transformers (effect of statement/expression on the abstract domain). Defined once /per language/. A correct abstract transformer should only produce a superset of what the actual transformation produces.
-3. Iteracet abstract transformers over abstract domain until *fixed point* is reached. This is then an over-approximation of the program.
+3. Iteracet abstract transformers over abstract domain until *fixed point* is reached. This is then an over-approximation of the program. In practice you may need to reiterate over steps 1 and 2 if you find that they weren't correct.
 
 *** Example
 
-#+BEGIN_SRC pascal
-foo (int i) {
-
-1: int x := 5;
-2: int y := 7;
-
-3: if (i >= 0) {
-4:   y := y + 1;
-5:   i := i - 1;
-6:   goto 3;
-   }
-
-7: assert 0 <= x + y
-}
+#+BEGIN_SRC example -n 0
+  foo (int i) {
+  int x := 5;
+  int y := 7;
+  if (i >= 0) {
+    y := y + 1;
+    i := i - 1;
+    goto 3; }
+  assert 0 <= x + y
+  }
 #+END_SRC
 
-1. Picking domain: Sign abstraction (Only ~+~ and ~-~ values, ~0~ doesn't exist). ~+~ represents all positive numbers, ~-~ all negative numbers including 0.
+**** Picking domain
+
+Sign abstraction: ~+~ represents all positive numbers, ~-~ all negative numbers including 0. $\top$ stands for $\top$ (Top), $\bot$ for $\bot$ (Bottom).
+
 #+BEGIN_SRC dot :exports results :file signAbstraction.png
 graph {
-T -- "+" -- 0 -- "_|_"
-T -- "-" -- 0
+  node [shape=none]
+  "T" -- {"+", "-"} -- 0 -- "B"
 }
 #+END_SRC
 
+#+ATTR_LATEX: :width 3cm
 #+RESULTS:
 [[file:signAbstraction.png]]
 
 Example Abstract program state: 
-| pc | x | y      | i |
-|  2 | + | bottom | T |
+| pc | x | y | i |
+|  2 | + | $\bot$ | $\top$ |
 
-2. Defining abstract transformers: What happens to program state on certain expressions.
+**** Defining abstract transformers: What happens to program state on certain expressions.
 
 | pc | x | y | i |
-|  4 | T | + | T |
+|  4 | $\top$ | + | $\top$ |
 
 #+BEGIN_SRC 
 y := y + 1
 #+END_SRC
 
 | pc | x | y | i |
-|  5 | T | + | T |
+|  5 | $\top$ | + | $\top$ |
 
 ------------
 
 | pc | x | y | i |
-|  4 | T | - | T |
+|  4 | $\top$ | - | $\top$ |
 
 #+BEGIN_SRC 
 y := y + 1
 #+END_SRC
 
 | pc | x | y | i |
-|  5 | T | 0 | T |
+|  5 | $\top$ | 0 | $\top$ |
 
 Not correct, because transformer isn't a superset of the transformations (doesn't represent ~y=-3~ -> ~y=-2~)
 
 | pc | x | y | i |
-|  5 | T | T | T |
+|  5 | $\top$ | $\top$ | $\top$ |
 
 Correct.
 
 ------------
 
 | pc | x | y | i |
-|  4 | T | 0 | T |
+|  4 | $\top$ | 0 | $\top$ |
 
 #+BEGIN_SRC 
 y := y + 1
 #+END_SRC
 
 | pc | x | y | i |
-|  5 | T | T | T |
+|  5 | $\top$ | $\top$ | $\top$ |
 
 Correct, but ~y=+~ would be more constrained and still correct.
 
-*** Abstract Transformers
+Easy to be *sound* and *imprecise*, desirable to be sound and /precise/. Sometimes precision is sacrifices for performance.
 
-Easy to be *sound* and *imprecise*, desirable to be sound and /precise/. For efficiency, sacrifice precision sometimes.
+**** Iterating to a fixed point
+
+Starting with the following table
+
+| pc | x | y | i |
+|  1 | $\bot$ | $\bot$ | $\bot$ |
+|  2 | $\bot$ | $\bot$ | $\bot$ |
+|  3 | $\bot$ | $\bot$ | $\bot$ |
+|  4 | $\bot$ | $\bot$ | $\bot$ |
+|  5 | $\bot$ | $\bot$ | $\bot$ |
+|  6 | $\bot$ | $\bot$ | $\bot$ |
+|  7 | $\bot$ | $\bot$ | $\bot$ |
+
+Continuously apply the instructions to all pcs that can follow it (~if~ goes to both conditions, ~goto~ goes to its destination). Start with the declaration of variable ~i~. Do this until nothing changes anymore (that's a fixed point). A step might look like this (the ones with ~*~ changed):
+
+| pc | x | y | i |
+|  1 | $\bot$ | $\bot$ | $\top$ |
+|  2 | + | $\bot$ | $\top$ |
+|  3 | + | + | $\top$ |
+|  4 | $\bot$ | $\bot$ | $\bot$ |
+|  5 | $\bot$ | $\bot$ | $\bot$ |
+|  6 | $\bot$ | $\bot$ | $\bot$ |
+|  7 | $\bot$ | $\bot$ | $\bot$ |
+
+#+BEGIN_SRC
+3: if (i >= 0)
+#+END_SRC
+
+| pc | x | y | i |
+|  1 | $\bot$ | $\bot$ | $\top$ |
+|  2 | + | $\bot$ | $\top$ |
+|  3 | + | + | $\top$ |
+| *4 | + | + | + |
+|  5 | $\bot$ | $\bot$ | $\bot$ |
+|  6 | $\bot$ | $\bot$ | $\bot$ |
+| *7 | + | + | - |
+
+The end result is this:
+
+| pc | x | y | i |
+|  1 | $\bot$ | $\bot$ | $\top$ |
+|  2 | + | $\bot$ | $\top$ |
+|  3 | + | + | $\top$ |
+|  4 | + | + | + |
+|  5 | + | + | + |
+|  6 | + | + | $\top$ |
+|  7 | + | + | - |
+
+Check property: $P\models (0\leq x + y)$, $P_{sign}\models(0\leq x + y)$ -> Sign domain *precise enough* to prove property.
+
+Changing property: $P\not\models(0\leq x-y)$, $P_{sign}\not\models(0\leq x-y)$ -> Sign domain *is sound*: property does not hold and it confirms it
+
+Changing again: $P\models(0\leq y-x)$, $P_{sign}\not\models(0\leq y-x)$ -> Sign domain *too imprecise* to prove property.
+
+**** Using the interval domain
+
+Introducing variables makes them $[-\infty, \infty]$. When multiple states arrive at one point (e.g. $[7, 7]$ and $[8, 8]$), join them ($[7, 8]$). In this case using the interval domain doesn't terminate, because $[7, k]$ always gets replaced with $[7, k+1]$. Widening (directly going to $[7, \infty]$) can solve this (careful though).
+
+End state:
+| pc | x       | y            | i              |
+|  7 | $[5,5]$ | $[7,\infty]$ | $[-\infty,-1]$ |
+
+Check property: $P\models (0\leq x + y)$, $P_{interval}\models(0\leq x + y)$ -> Interval domain *precise enough* to prove property.
