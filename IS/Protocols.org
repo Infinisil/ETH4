@@ -1,0 +1,103 @@
+A protocol is just a distributed algorithm, defined by rules of how messages are exchanged between principals.
+
+** Messages
+
+- Names: A, B
+- Asymmetric keys: $A$'s public key $K_A$ and private key $K_A^{-1}$
+- Symmetrix keys: $K_{AB}$ shared by A and B
+- Encryption: asymmetric $\{M\}_{K_A}$, symmetric $\{M\}_{K_{AB}}$
+- Signing: $\{M\}_{K_A^{-1}}$
+- Nonces: $N_A$, fresh data items used for challenge/response
+- Timestamps: $T$
+- Message concatenation: $M_1, M_2$ or $M_1 || M_2$
+
+** Communication
+
+Example: $$A\to B:\{A,T_A,K_{AB}\}_{K_B}$$
+
+Usually asynchronous.
+
+** Attackers
+
+Multiple models: 
+
+- Knows protocol, but cannot break crypto
+- Passive but overhears everything
+- Active, can intercept and generate messages
+- Insider, principal running protocol
+
+*** Standard model: Dolev-Yao
+
+Attacker can:
+
+- Intercept and read all messages
+- Decompose messages in their parts, but cryptography is "perfect", requires inverse key
+- Construct and send messages at any time
+- Compromise agents and learn their key
+
+Protocol should only work with non-compromised agents.
+
+** Protocol objectives
+
+*** Entity authentication
+
+Verify identity of recently active participant ("I am here now"). Agreement as a variant, injectively agree (Each run of $A$ corresponds to a /unique/ run of $B$, matching histories) on set of data items $ds$.
+
+
+*** Secrecy(Confidentality): Only authorized ones get the data
+- Freshness: No replays of older data
+- Key confirmation: One party is assured that a second party actually has a given key
+
+** Kinds of attacks
+
+- Man-in-the-middle attack: $A$ \leftrightarrow M \leftrightarrow B$.
+- Replay attack
+- Reflection attack: Send back to originator
+- Oracle attack: Take advantage of normal protocol responses as encryption and decryption "services"
+- Type flaw attack
+- Guessing attack
+
+** Examples
+
+*** NSPK
+
+1. $A\to B:\{A,N_A\}_{K_B}$
+2. $B\to A:\{N_A,N_B\}_{K_A}$
+3. $A\to B:\{N_B\}_{K_B}$
+
+Execution:
+
+1. Generate nonce, concatenate to name, encrypt, send to Bob, goto 2
+2. receive $M$, decrypt, check if of form $\{N_{Alice},X\}$ then goto 3 else reject
+3. ...
+
+Goal: Mutual authentication (agreement) in all possible interleaved runs.
+
+Man-in-the-middle attack possible by having 2 simultaneous sessions, the person in the middle pretending to be Alice, Bob thinks he speaks with Alice.
+*** Otway-Rees
+
+1. $A\to B: I,A,B,\{N_A,I,A,B\}_{K_{AS}}$
+2. $B\to S: I,A,B,\{N_A,I,A,B\}_{K_{AS}},\{N_B,I,A,B\}_{K_{BS}}$
+3. $S\to B: I,\{N_A,K_{AB}\}_{K_{AS}},\{N_B,K_{AB}\}_{K_{BS}}$
+4. $B\to A: I,\{N_A,K_{AB}\}_{K_{AS}}$
+
+Possible attack when $|K_{AB}| == |I|+|B|+|A|$:
+
+1. $A\to M(B): I,A,B,\{N_A,I,A,B\}_{K_{AS}}$
+4. $M(B)\to A: I,\{N_A,I,A,B\}_{K_{AS}}$
+
+*** CA (Denning & Sacco)
+
+Key exchange
+
+1. $A\to S: A,B$
+2. $S\to A: C_A,C_B$
+3. $A\to B: C_A,C_B,\{\{T_A,K_{AB}\}_{K_A^{-1}}\}_{K_B}$
+
+Man-in-the-middle attack possible.
+
+* Formal Methods
+
+Build *formal symbolic model* $M$ of protocol. Model as a transition system describing all actions of principals and attacker. Specify property $\phi$, typically safety property, e.g. secrecy is an invariant. Correctness $M\models\phi$. Theorem proving and model checking are main techniques.
+
+Interleaving trace models: A trace is a sequence of events, sent messages. Protocol denotes trace set. Dolev-Yao attacker model.
