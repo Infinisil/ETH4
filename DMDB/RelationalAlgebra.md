@@ -1,3 +1,0 @@
-# Relational Algebra
-
-
