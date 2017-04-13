@@ -1,9 +1,11 @@
+* Overview
+
 A protocol is just a distributed algorithm, defined by rules of how messages are exchanged between principals.
 
 ** Messages
 
 - Names: A, B
-- Asymmetric keys: $A$'s public key $K_A$ and private key $K_A^{-1}$
+- Asymmetric keys: $A$ 's public key $K_A$ and private key $K_A^{-1}$
 - Symmetrix keys: $K_{AB}$ shared by A and B
 - Encryption: asymmetric $\{M\}_{K_A}$, symmetric $\{M\}_{K_{AB}}$
 - Signing: $\{M\}_{K_A^{-1}}$
