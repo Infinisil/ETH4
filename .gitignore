@@ -10,3 +10,5 @@ ltximg
 *.pdf
 *.tex
 *.ibc
+
+!include.tex
