@@ -1,6 +1,6 @@
 Test/
-*/pdf/
-*/html/
+**/pdf/
+**/html/
 DMDB/postgresTest/data/*
 *.swp
 *.aux
