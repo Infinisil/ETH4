@@ -1,0 +1,86 @@
+#+LATEX_HEADER: \usepackage{stmaryrd}
+
+* 
+** 
+
+- $\llbracket x\leq y\rrbracket(m_1) = m_1[x\mapsto[-3,5], y\mapsto[0,5]]$
+- $\llbracket 3\leq 5\rrbracket(m_1) = m_1[x\mapsto[-3,8], y\mapsto[0,5]]$
+- $\llbracket 5\leq 3\rrbracket(m_1) = m_1[x\mapsto\bot, y\mapsto\bot]$
+
+- $\llbracket x\leq y\rrbracket(m_2) = m_1[x\mapsto\bot, y\mapsto\bot]$
+- $\llbracket 3\leq 5\rrbracket(m_2) = m_1[x\mapsto[-3,8], y\mapsto\bot]$
+- $\llbracket 5\leq 3\rrbracket(m_2) = m_1[x\mapsto\bot, y\mapsto\bot]$
+
+** 
+
+[x:=a](m) = x->[p, q] where <a, m>eval[p,q]
+
+** 
+
+<[a, b] * [c, d], m> = [min(a*c, a*d, b*c, b*d), max(a*c, a*d, b*c, b*d)]
+
+** 
+
+$\llbracket x=y\rrbracket(m) = x\sqcap y = m[x->m(x)\sqcap_i m(y); y->m(x)\sqcap_i m(y)]$
+
+* 
+
+** 
+*** $t_1$
+
+| pc | x | y | z |
+|  1 | 0 | 0 | 0 |
+|  2 | 0 | 2 | 0 |
+|  3 | 0 | 2 | 0 |
+|  5 | 0 | 2 | 0 |
+|  6 | 0 | 2 | 0 |
+
+*** $t_2$
+
+| pc | x | y | z |
+|  1 | 3 | 0 | 0 |
+|  2 | 3 | 2 | 0 |
+|  4 | 3 | 2 | 0 |
+|  5 | 3 | 2 | 2 |
+|  6 | 3 | 2 | 6 |
+
+
+** 
+
+| pc | x      | y      | z      |
+|  1 | [0, 3] | [0, 0] | [0, 0] |
+|  2 | [0, 3] | [2, 2] | [0, 0] |
+|  3 | [0, 3] | [2, 2] | [0, 0] |
+|  5 | [0, 3] | [2, 2] | [0, 2] |
+|  6 | [0, 3] | [2, 2] | [0, 6] |
+
+** 
+
+| pc | x             | y       | z              |
+|  1 | $\top$        | $\bot$  | $\bot$         |
+|  2 | $\top$        | $[2,2]$ | $\bot$         |
+|  3 | $[-\infty,2]$ | $[2,2]$ | $\bot$         |
+|  4 | $[3,\infty]$  | $[2,2]$ | $\bot$         |
+|  5 | $\top$        | $[2,2]$ | $[-\infty,6]$  |
+|  6 | $\top$        | $[2,2]$ | $[-\infty,12]$ |
+
+* 
+
+** 
+
+#+BEGIN_SRC C
+foo (int x) {
+  x = abs(x);
+  if (x==0)
+    x = 1;
+  y = 2 * x;
+}
+
+bar (int x) {
+  if (x==0)
+    x = 1;
+  y = 2 * x;
+  y = abs(y);
+  x = abs(x);
+}
+#+END_SRC

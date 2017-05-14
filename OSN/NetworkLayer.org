@@ -102,10 +102,9 @@ Traceroute: TTL in IP header decreased on every hop, ICMP error if zero.
 
 ** IPv6
 
-128 bit addresses, most of header, lots of smaller changes. Transition problem. Tunneling over IPv4 (IPv6 packet as payload).
+128 bit addresses, most of header, lots of smaller changes. Transition problem, one solution: Tunneling over IPv4 (IPv6 packet as payload).
 
-
-* NAT (Network Address Translation)
+** NAT (Network Address Translation)
 
 Connects internal to external network. Many internals connected using few external addresses. One-to-one mapping of internal IP:port combo to external IP:port combo (often just one IP).
 
@@ -114,3 +113,61 @@ New translations: When host makes connection, assign (IP and) port.
 Downsides: Can only receive incoming packets when outgoing connection is set up. Difficult to run servers, P2P and UDP apps.
 
 Upsides: Relieves address pressure, easy, useful (firewall).
+
+* Routing
+
+Spanning tree only so good, doesn't provide fastest link between every pair of nodes. Routing finds the best paths to use. Used at the minute level.
+
+Delivery Models:
+
+- Unicast: Single node
+- Broadcast: All nodes
+- Multicast: Multiple nodes
+- Anycast
+
+Goals:
+
+- Correctness
+- Efficient paths
+- Fair paths
+- Fast convergence
+- Scalability
+
+Rules:
+
+- Decentralized
+- Only learn from neighbors
+- Concurrently
+- May have failures
+
+** Shortest path routing
+
+Via cost function for each link. Lowest path is path with lowest total cost. Optimal: Subpaths also shortest.
+
+Sink tree: Collection of paths that are shortest to a specific node from each one -> node can know shortest path only with destination, listing the next hop.
+
+Calculatable using Djikstra (centralized).
+
+** Distance Vector Routing
+
+Distributed version of Bellman-Ford, slow convergence after some failures. Nodes only know cost to neighbors.
+
+Algorithm:
+
+1. Initialize vector with 0 cost to self, infinity to other destinations
+2. Periodicall send vector to neighbors
+3. Uptade vector for each destination by selecting the shortest distance heard, after adding cost of neighbor link, use best neighbor for forwarding.
+
+When node fails, others forget. Partitioned network can lead to "Count to infitify" scenario.
+
+** RIP (Routing Information Protocol)
+
+Hop count as metric, infinity is 16 hops, includes split horizon, poison reverse, on top of UDP, 180s timeout, sends every 30s.
+
+** Flooding
+
+Broadcast info to all nodes, simple but inefficient, remeber received message so it's only sent once, send to all by default, may receive multiple same messages. Flood again when sequence number increased, use ARQ to make reliable.
+
+** Link State Routing
+
+...
