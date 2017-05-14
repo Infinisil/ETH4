@@ -1,0 +1,116 @@
+* Network Layer Notes
+
+Switches can send between machines, but
+
+- Don't scale
+- Only work on one technology (Ethernet, 3G, etc.)
+- No traffic control, best route
+
+* Routing
+
+Deciding where to send traffic
+
+** Network Service Models
+
+Both use *Store-and-Forward*: Routers store full packet in buffer if necessary before forwarding. Input and output buffer, fabric inbetween. Typically FIFO (discarded if full).
+
+*** Datagram Model
+
+Connectionless, like postal service.
+
+Packet contain destination address, router uses potentially changing forwarding table keyed by address. Used by IP.
+
+*** Virtual Cirtuit Model
+
+Has connection, like telephone.
+
+Phases:
+
+- Connection establishment: Choose path, circuit info stored in routers
+- Data transfer
+- Connection teardown: circuit info deleted from routers
+
+Packets only need to contain a short label to identify the circuit, no global labels. Forwarding table keyed on circuit. E.g.: A receives label 1 from X, forwards it to B with label 5, but label 1 from Y gets forwarded to C with label 2.
+
+MPLS (Multi-Protocol Label Switching): Virtual-circuit like tech used by ISPs: Adds labels on ingress in their network, undoes at egress. Curcuits set up ahead of time.
+
+*** Comparison
+
+| Issue              | Datagrams                   | Virtual Circuits           |
+| Setup phase        | Net needed                  | Required                   |
+| Router state       | Per destination             | Per connection             |
+| Addresses          | Packet carries full address | Packet carries short label |
+| Routing            | Per packet                  | Per cirtuit                |
+| Failures           | Easier to mask              | Difficult to mask          |
+| Quality of service | Difficult to add            | Easier to add              |
+
+
+** Internetworking
+
+Hiding differences in service model, addressing, QOS, packet sizes, security behing a single protocol. Solution: IP as the lowest common denominator
+
+* IP (v4)
+
+IP prefixes: 128.13.0.0/16 is 127.13.0.0 to 127.13.255.255. Originally class A (\/24, starts with 0), B (\/16, starts with 10) and C (\/8, starts with 110) addresses.
+
+Private IP space: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16. Need public IP address and NAT to connect to global internet.
+
+** Forwarding
+
+Nodes use table with next hop for IP prefixes using the longest (most specific) matching prefix, which is very flexible. 0.0.0.0/0 is the default, catches all, used for router, when not in local network. Not as fast as table lookup, not a problem today.
+
+*** Getting an IP Address using DHCP (Dynamic Host Configuration Protocol)
+
+Does IP address leasing, network prefix, address of local router (default gateway), DNS and time server, etc. Is client-server application, uses UPD ports 67, 68.
+
+Node broadcasts message to address of all ones (IP: 255.255.255.255, Ethernet: ff:ff:ff:ff:ff:ff).
+
+DHCP Messages: Clients sends DISCOVER (broadcast), server sends IP address OFFER, clients sends REQUEST, server sends ACK. To renew lease: REQUEST then ACK.
+
+*** ARP (Address Resolution Protocol)
+
+Used to get link layer destination addresses from IP destination address. Sits on top of link layer. Just asks node with target IP to identify itself, using broadcast to reach all nodes. Other discovery protocols: zeroconf, Bonjour.
+
+*** Different MTUs (Mamimum Transmission Unit)
+
+Different networks have different maximum packet sizes, (Ethernet 1.5K, WiFi 2.3K).
+
+**** Fragmentation
+
+Split up packets in network if they're too big to forward. Dated method, very slow. Allows repeated fragmentation, more work for routers and hosts, packet loss more severe, security vulnerabilities.
+
+Copies IP header to pieces, adjust length on them, set offset to indicate position, set MF (More Fragments) on all pieces except last.
+
+**** Discovery
+
+Find largest packet that fits on the network path, used today by IP. Routers provide feedback: What packet size would have fit. Can change over time, depends on path. Implemented with ICMP. Set DF (Don't Fragment) in IP header to get feedback messages.
+
+*** Error handling with ICMP (Internet Control Message Protocol)
+
+On top of IP, error is at router while forwarding. Router errors, sends back ICMP report to source address and discards packet.
+
+Message format: Type, code and checksum, often start of offending packet as payload.
+
+Examples:
+
+| Name                           | Type/Code  | Usage                |
+| Dest. unreachable (Net or host | 3 / 0 or 1 | Lack of connectivity |
+| Time exceeded (Transit)        | 11 / 0     | Traceroute           |
+| Echo request or reply          | 8 or 0 / 0 | Ping                 |
+
+Traceroute: TTL in IP header decreased on every hop, ICMP error if zero.
+
+** IPv6
+
+128 bit addresses, most of header, lots of smaller changes. Transition problem. Tunneling over IPv4 (IPv6 packet as payload).
+
+
+* NAT (Network Address Translation)
+
+Connects internal to external network. Many internals connected using few external addresses. One-to-one mapping of internal IP:port combo to external IP:port combo (often just one IP).
+
+New translations: When host makes connection, assign (IP and) port.
+
+Downsides: Can only receive incoming packets when outgoing connection is set up. Difficult to run servers, P2P and UDP apps.
+
+Upsides: Relieves address pressure, easy, useful (firewall).
